@@ -312,7 +312,13 @@ const S = {
     background: '#111', overflow: 'hidden', position: 'relative',
   },
   mobileVideo: {
-    position: 'absolute', inset: 0, width: '100%', height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 'calc(var(--bottom-nav-h) + env(safe-area-inset-bottom))',
+    width: '100%',
+    height: 'calc(100% - var(--bottom-nav-h) - env(safe-area-inset-bottom))',
     objectFit: 'contain', background: '#000', cursor: 'pointer', zIndex: 1,
   },
   pauseOverlay: {
