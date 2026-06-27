@@ -55,7 +55,8 @@ export default function HomePage() {
     const feed = feedRef.current;
     if (!feed) return;
     const onScroll = () => {
-      const idx = Math.round(feed.scrollTop / window.innerHeight);
+      const slideHeight = feed.clientHeight || window.innerHeight;
+      const idx = Math.round(feed.scrollTop / slideHeight);
       setCurrentIdx(idx);
     };
     feed.addEventListener('scroll', onScroll, { passive: true });
@@ -66,7 +67,8 @@ export default function HomePage() {
 
   const scrollToIdx = (idx) => {
     if (!feedRef.current || idx < 0 || idx >= videos.length) return;
-    feedRef.current.scrollTo({ top: idx * window.innerHeight, behavior: 'smooth' });
+    const slideHeight = feedRef.current.clientHeight || window.innerHeight;
+    feedRef.current.scrollTo({ top: idx * slideHeight, behavior: 'smooth' });
     setCurrentIdx(idx);
   };
 
@@ -125,7 +127,7 @@ export default function HomePage() {
         {/* Vertical scroll-snap feed */}
         <div ref={feedRef} className="feed-scroll" style={S.feed}>
           {videos.length === 0 ? (
-            <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ height: 'var(--app-viewport-h)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <p style={{ color: '#555' }}>No videos yet.</p>
             </div>
           ) : (
@@ -162,7 +164,7 @@ export default function HomePage() {
 
 const S = {
   center: {
-    height: '100vh', background: '#111',
+    height: 'var(--app-viewport-h)', background: '#111',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   },
   spinner: {
@@ -170,7 +172,7 @@ const S = {
     border: '3px solid rgba(255,255,255,0.12)', borderTopColor: 'var(--accent)',
   },
   feed: {
-    height: '100vh', width: '100%',
+    height: 'var(--app-viewport-h)', width: '100%',
     overflowY: 'scroll', scrollSnapType: 'y mandatory',
   },
   mobileTop: {

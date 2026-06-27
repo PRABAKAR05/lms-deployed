@@ -307,7 +307,7 @@ export default function VideoCard({ video, onUpdate }) {
 
 const S = {
   slide: {
-    height: '100vh', width: '100%', scrollSnapAlign: 'start', flexShrink: 0,
+    height: 'var(--app-viewport-h)', width: '100%', scrollSnapAlign: 'start', flexShrink: 0,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     background: '#111', overflow: 'hidden', position: 'relative',
   },
