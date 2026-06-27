@@ -1,6 +1,6 @@
 # SkillShorts - Mini Short-Video Learning Platform
 
-SkillShorts is a full-stack short-video learning platform built for the Skillcase Intern Assessment. It provides a vertical shorts feed with authentication, likes, comments, bookmarks, local video serving, and a clean split between routes, controllers, services, middleware, and UI layers.
+SkillShorts is a full-stack short-video learning platform built for the Skillcase Intern Assessment. It provides a vertical shorts feed with authentication, likes, comments, bookmarks, Supabase Storage video playback for deployment, and a clean split between routes, controllers, services, middleware, and UI layers.
 
 ## Tech Stack
 
@@ -18,7 +18,7 @@ SkillShorts is a full-stack short-video learning platform built for the Skillcas
 - Like, comment, and bookmark endpoints
 - Duplicate likes/bookmarks prevented by composite primary keys
 - Transaction-based like toggling with atomic `like_count` updates
-- Express static serving for local video files from `backend/uploads`
+- Supabase Storage public video URLs for reliable Render/Vercel deployment
 - React vertical scroll-snap shorts feed
 - Autoplay when a video enters view using Intersection Observer
 - Overlay actions for like, comment, and bookmark
@@ -65,7 +65,7 @@ skill-case/
 
 - Node.js 18 or newer
 - PostgreSQL database URL from Supabase or Neon
-- The three assessment video files downloaded locally
+- The three assessment video files uploaded to a public Supabase Storage bucket
 
 ## Backend Setup
 
@@ -89,6 +89,7 @@ DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 JWT_SECRET=replace_with_a_strong_secret
 JWT_EXPIRES_IN=7d
 FRONTEND_URL=http://localhost:5173
+SUPABASE_STORAGE_BASE_URL=https://YOUR_PROJECT_REF.supabase.co/storage/v1/object/public/YOUR_BUCKET
 ```
 
 Apply the database schema:
@@ -97,12 +98,32 @@ Apply the database schema:
 npm run migrate
 ```
 
-Copy the three provided videos into `backend/uploads/`. The current seed script expects these filenames:
+Create or update the public Supabase Storage bucket:
+
+```bash
+npm run storage:setup
+```
+
+Upload the three provided videos to your Supabase Storage bucket. The seed script expects these filenames when `SUPABASE_STORAGE_BASE_URL` is used:
 
 ```text
 Introduction_German.mp4
 Learning_German.mp4
 Story_German.mp4
+```
+
+For example, if your bucket is public and named `videos`, use:
+
+```env
+SUPABASE_STORAGE_BASE_URL=https://YOUR_PROJECT_REF.supabase.co/storage/v1/object/public/videos
+```
+
+You can also override any individual video URL:
+
+```env
+INTRODUCTION_GERMAN_VIDEO_URL=https://...
+LEARNING_GERMAN_VIDEO_URL=https://...
+STORY_GERMAN_VIDEO_URL=https://...
 ```
 
 Seed the video metadata:
@@ -136,6 +157,73 @@ If the backend runs on a different URL, create `frontend/.env`:
 ```env
 VITE_API_URL=http://localhost:5000
 ```
+
+For Vercel, set `VITE_API_URL` to your Render backend URL, for example:
+
+```env
+VITE_API_URL=https://your-render-service.onrender.com
+```
+
+## Deployment
+
+### Render Backend
+
+Create a Render Web Service from this repository.
+
+```text
+Root Directory: backend
+Build Command: npm install
+Start Command: npm start
+```
+
+Set these environment variables:
+
+```env
+NODE_ENV=production
+PORT=10000
+DATABASE_URL=postgresql://postgres.sxtlfczkxkupkfzvynhb:[YOUR_DB_PASSWORD]@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres
+JWT_SECRET=[YOUR_STRONG_SECRET]
+JWT_EXPIRES_IN=7d
+FRONTEND_URL=https://[YOUR_VERCEL_APP].vercel.app
+SUPABASE_STORAGE_BASE_URL=https://sxtlfczkxkupkfzvynhb.supabase.co/storage/v1/object/public/videos
+```
+
+Use the Supabase pooler URL above for Render. Do not use the direct `db.sxtlfczkxkupkfzvynhb.supabase.co` URL on Render, because it can resolve to IPv6 and fail with `ENETUNREACH`.
+
+Keep `FRONTEND_URL` without a trailing slash:
+
+```text
+https://skillcase-assessment.vercel.app
+```
+
+After the first deploy, run these once from your machine:
+
+```bash
+cd backend
+npm run migrate
+npm run storage:setup
+npm run seed
+```
+
+### Vercel Frontend
+
+Create a Vercel project from this repository.
+
+```text
+Root Directory: frontend
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm install
+```
+
+Set this environment variable:
+
+```env
+VITE_API_URL=https://[YOUR_RENDER_SERVICE].onrender.com
+```
+
+After Vercel gives you the final frontend URL, add that exact URL to Render's `FRONTEND_URL` value and redeploy the backend.
 
 ## API Reference
 
@@ -185,5 +273,5 @@ The health endpoint should respond with:
 ## Notes
 
 - Do not commit `.env`, `node_modules`, `dist`, PDFs, images, or video files.
-- The assessment videos must stay local under `backend/uploads`.
+- The assessment videos should not be committed to git. For deployment, upload them to Supabase Storage and seed their public URLs.
 - The SQL schema is included at `backend/models/schema.sql`.
