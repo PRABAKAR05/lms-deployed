@@ -1,0 +1,345 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --surface: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #f1f1f1;
+  --muted: #888;
+  --accent: #6c63ff;
+  --danger: #ef4444;
+  --success: #22c55e;
+}
+
+html, body {
+  background: #111;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  height: 100%;
+  overflow: hidden;
+}
+
+#root { height: 100vh; }
+
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, textarea { font-family: inherit; outline: none; }
+a { text-decoration: none; color: inherit; }
+
+/* ── Spin animation ─────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Scrollbar hide ─────────────────────────────────────── */
+.feed-scroll::-webkit-scrollbar { display: none; }
+.feed-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* ── Page outer shell ───────────────────────────────────── */
+.page-outer {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: #111;
+}
+
+/* ── Sidebar (desktop only) ─────────────────────────────── */
+.sidebar {
+  width: 72px;
+  min-width: 72px;
+  height: 100vh;
+  background: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 0 24px;
+  gap: 4px;
+  border-right: 1px solid #1e1e1e;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 14px;
+  letter-spacing: -1px;
+}
+
+.sidebar-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-btn:hover { background: #1c1c1c; color: #ccc; }
+.sidebar-btn.active { background: #1c1c1c; color: var(--accent); }
+.sidebar-spacer { flex: 1; }
+
+/* ── Content area ───────────────────────────────────────── */
+.content-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+}
+
+/* ── Nav arrows ─────────────────────────────────────────── */
+.nav-arrows {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
+}
+
+.nav-arrow-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 17px;
+  transition: background 0.15s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.nav-arrow-btn:hover:not(:disabled) { background: rgba(255,255,255,0.16); }
+.nav-arrow-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+/* ── Desktop Reel inner layout ──────────────────────────── */
+.reel-desktop-inner {
+  display: flex;
+  align-items: flex-end;
+  height: 86vh;
+  max-height: 700px;
+}
+
+/* Info panel (left of video) */
+.reel-info-panel {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-right: 28px;
+  padding-bottom: 20px;
+  height: 100%;
+  gap: 0;
+}
+
+/* Video column (center) */
+.reel-video-col {
+  width: 336px;
+  flex-shrink: 0;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+  border: 1px solid #232323;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+.reel-video-col video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+  display: block;
+  background: #000;
+}
+
+/* Actions column (right of video) */
+.reel-actions-col {
+  width: 72px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-left: 20px;
+  padding-bottom: 20px;
+  gap: 24px;
+  height: 100%;
+}
+
+/* ── Action button ──────────────────────────────────────── */
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  padding: 0;
+}
+
+.action-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: transform 0.1s;
+}
+
+.action-btn:active .action-icon { transform: scale(0.85); }
+
+.action-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+}
+
+/* Desktop: no bg on action icons */
+.reel-actions-col .action-icon {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Mobile: frosted-glass bg on action icons */
+.reel-mobile-actions .action-icon {
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  width: 46px;
+  height: 46px;
+}
+
+/* ── Mobile-only overlays ───────────────────────────────── */
+.reel-mobile-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 15;
+}
+
+.reel-mobile-info {
+  position: absolute;
+  bottom: 80px;
+  left: 16px;
+  right: 72px;
+  z-index: 15;
+  pointer-events: none;
+}
+
+/* ── Info text ──────────────────────────────────────────── */
+.info-category {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+.info-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+
+.info-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Desktop info panel: slightly muted */
+.reel-info-panel .info-title { color: #ddd; font-size: 15px; }
+.reel-info-panel .info-desc { color: #666; -webkit-line-clamp: 4; }
+
+/* ── Mute button (inside video col) ────────────────────── */
+.mute-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  border: none;
+  color: #fff;
+  transition: background 0.15s;
+}
+
+.mute-btn:hover { background: rgba(0,0,0,0.75); }
+
+/* Mobile float mute (inside mobile actions list) */
+.mute-btn-float {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+}
+
+/* ── Responsive: hide desktop on mobile, and vice versa ── */
+@media (max-width: 768px) {
+  .sidebar { display: none !important; }
+  .nav-arrows { display: none !important; }
+  .reel-desktop-inner { display: none !important; }
+  /* Shift mobile actions up so they clear the bottom nav */
+  .reel-mobile-actions { bottom: 80px !important; }
+  .reel-mobile-info { bottom: 88px !important; }
+}
+
+@media (min-width: 769px) {
+  .reel-mobile-actions { display: none !important; }
+  .reel-mobile-info { display: none !important; }
+}
