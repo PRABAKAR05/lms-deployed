@@ -11,12 +11,19 @@ const errorMiddleware = require('./src/middlewares/error.middleware');
 
 const app = express();
 
-// Security headers (disable CSP for dev, enable in prod if needed)
-app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+// Security headers (allow the Vite frontend to load video assets from this API)
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 
 // CORS
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
-  .split(',').map(s => s.trim());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  ...(process.env.FRONTEND_URL || '').split(','),
+].map(s => s.trim()).filter(Boolean);
 
 app.use(cors({
   origin: (origin, cb) => {
